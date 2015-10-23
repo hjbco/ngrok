@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	gometrics "github.com/rcrowley/go-metrics"
+	redis "gopkg.in/redis.v3"
 	"io/ioutil"
 	"net/http"
 	"ngrok/conn"
@@ -151,6 +152,7 @@ func (m *LocalMetrics) Report() {
 		}
 
 		m.Info("Reporting: %s", buffer)
+		client.ZAdd("ngrok:report", redis.Z{float64(time.Now().Unix()), buffer})
 	}
 }
 

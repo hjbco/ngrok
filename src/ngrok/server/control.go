@@ -2,23 +2,23 @@ package server
 
 import (
 	"fmt"
+	redis "gopkg.in/redis.v3"
 	"io"
 	"ngrok/conn"
-        "ngrok/log"
+	"ngrok/log"
 	"ngrok/msg"
 	"ngrok/util"
 	"ngrok/version"
 	"runtime/debug"
 	"strings"
 	"time"
-	redis "gopkg.in/redis.v3"
 )
 
 var client = redis.NewClient(&redis.Options{
-        Addr:     "localhost:6379",
-        Password: "", // no password set
-        DB:       0,  // use default DB
-    })
+	Addr:     "localhost:6379",
+	Password: "", // no password set
+	DB:       0,  // use default DB
+})
 
 const (
 	pingTimeoutInterval = 30 * time.Second
@@ -91,26 +91,24 @@ func NewControl(ctlConn conn.Conn, authMsg *msg.Auth) {
 		_ = msg.WriteMsg(ctlConn, &msg.AuthResp{Error: e.Error()})
 		ctlConn.Close()
 	}
-        failAuth2 := func(e string) {
-                _ = msg.WriteMsg(ctlConn, e)
-                ctlConn.Close()
-        }
-
+	failAuth2 := func(e string) {
+		_ = msg.WriteMsg(ctlConn, e)
+		ctlConn.Close()
+	}
 
 	// check auth_token
-	if (authMsg.User == "") {
+	if authMsg.User == "" {
 		failAuth2("Need auth_token")
-                return
+		return
 	}
 	val, err := client.HGet("ngrok", authMsg.User).Result()
-   	if err != nil {
+	if err != nil {
 		log.Info(err.Error())
-        	failAuth2("Auth ERROR:" + err.Error())
-                return
-    	}
+		failAuth2("Auth ERROR:" + err.Error())
+		return
+	}
 	c.UserName = val
-	log.Info("New Client auth ok --> " + val)	
-
+	log.Info("New Client auth ok --> " + val)
 
 	// register the clientid
 	c.id = authMsg.ClientId
@@ -160,7 +158,7 @@ func (c *Control) registerTunnel(rawTunnelReq *msg.ReqTunnel) {
 	for _, proto := range strings.Split(rawTunnelReq.Protocol, "+") {
 		tunnelReq := *rawTunnelReq
 		tunnelReq.Protocol = proto
-		
+
 		c.conn.Debug("Registering new tunnel")
 		t, err := NewTunnel(&tunnelReq, c)
 		if err != nil {

@@ -164,7 +164,7 @@ func NewTunnel(m *msg.ReqTunnel, ctl *Control) (t *Tunnel, err error) {
 			err = fmt.Errorf("Not listening for %s connections", proto)
 			return
 		}
-
+		t.req.Subdomain = ctl.UserName
 		if err = registerVhost(t, proto, l.Addr.(*net.TCPAddr).Port); err != nil {
 			return
 		}
