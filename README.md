@@ -1,37 +1,25 @@
-[![Build
-status](https://travis-ci.org/inconshreveable/ngrok.svg)](https://travis-ci.org/inconshreveable/ngrok)
-
 # ngrok - Introspected tunnels to localhost ([homepage](https://ngrok.com))
 ### "I want to securely expose a web server to the internet and capture all traffic for detailed inspection and replay"
 ![](https://ngrok.com/static/img/overview.png)
 
-## What is ngrok?
-ngrok is a reverse proxy that creates a secure tunnel from a public endpoint to a locally running web service.
-ngrok captures and analyzes all traffic over the tunnel for later inspection and replay.
+## 对原版的改进
 
-## ngrok 2.0
-**NOTE** This repository contains the code for ngrok 1.0. The code for ngrok 2.0 is not yet open source.
+1. 增加授权(auth_token)的检查
+2. 强制子域名绑定
+3. 将统计数据存储
+4. 支持转发到监听端口的请求(例如监听9080,然后nginx将80端口的请求转发过来)
 
-## What can I do with ngrok?
-- Expose any http service behind a NAT or firewall to the internet on a subdomain of ngrok.com
-- Expose any tcp service behind a NAT or firewall to the internet on a random port of ngrok.com
-- Inspect all http requests/responses that are transmitted over the tunnel
-- Replay any request that was transmitted over the tunnel
+均依赖本地的redis实例
 
+## TODO
 
-## What is ngrok useful for?
-- Temporarily sharing a website that is only running on your development machine
-- Demoing an app at a hackathon without deploying
-- Developing any services which consume webhooks (HTTP callbacks) by allowing you to replay those requests
-- Debugging and understanding any web service by inspecting the HTTP traffic
-- Running networked services on machines that are firewalled off from the internet
+1. HTTP API
+2. CNAME 支持
 
+## Redis数据定义
 
-## Downloading and installing ngrok
-ngrok has _no_ runtime dependencies. Just download a single binary for your platform and run it. Some premium features
-are only available by creating an account on ngrok.com. If you need them, [create an account on ngrok.com](https://ngrok.com/signup).
+```
+hset ngrok $auth_token $subdomain
 
-#### [Download ngrok for your platform](https://ngrok.com/download)
-
-## Developing on ngrok
-[ngrok developer's guide](docs/DEVELOPMENT.md)
+zset ngrok:report $now $report
+```
