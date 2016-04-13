@@ -6,6 +6,7 @@ import (
 	"ngrok/log"
 	"ngrok/proto"
 	"ngrok/util"
+	"time"
 	"unicode/utf8"
 )
 
@@ -72,7 +73,7 @@ func (v *HttpView) Render() {
 	for i, obj := range v.HttpRequests.Slice() {
 		txn := obj.(*proto.HttpTxn)
 		path := truncatePath(txn.Req.URL.Path)
-		v.Printf(0, 3+i, "%s %v", txn.Req.Method, path)
+		v.Printf(0, 3+i, "%s %v %s", txn.Req.Method, path, time.Now().Format("2006-01-02 15:04:05"))
 		if txn.Resp != nil {
 			v.APrintf(colorFor(txn.Resp.Status), 30, 3+i, "%s", txn.Resp.Status)
 		}
