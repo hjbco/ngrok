@@ -178,8 +178,12 @@ func (c *Control) registerTunnel(rawTunnelReq *msg.ReqTunnel) {
 		c.tunnels = append(c.tunnels, t)
 
 		// acknowledge success
+		_url := t.url
+		if strings.HasSuffix(_url, ":9080") {
+			_url = _url[:len(_url) - 5]
+		}
 		c.out <- &msg.NewTunnel{
-			Url:      t.url,
+			Url:      _url,
 			Protocol: proto,
 			ReqId:    rawTunnelReq.ReqId,
 		}
