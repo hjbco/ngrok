@@ -183,7 +183,7 @@ func (c *Control) registerTunnel(rawTunnelReq *msg.ReqTunnel) {
 			_url = _url[:len(_url) - 5]
 		}
 		c.out <- &msg.NewTunnel{
-			Url:      _url,
+			Url:      t.url,
 			Protocol: proto,
 			ReqId:    rawTunnelReq.ReqId,
 		}
